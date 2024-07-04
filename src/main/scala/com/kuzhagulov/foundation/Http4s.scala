@@ -1,12 +1,12 @@
 package com.kuzhagulov.foundation
 
 import cats.*
+import cats.effect.{IO, IOApp}
 import cats.implicits.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import org.http4s.circe.*
-import cats.effect.{IO, IOApp}
 import org.http4s.HttpRoutes
+import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.{OptionalValidatingQueryParamDecoderMatcher, QueryParamDecoderMatcher}
 import org.http4s.ember.server.EmberServerBuilder

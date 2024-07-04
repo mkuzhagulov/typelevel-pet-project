@@ -3,9 +3,9 @@ package com.kuzhagulov.foundation
 import cats.effect.kernel.MonadCancelThrow
 import cats.effect.{IO, IOApp}
 import doobie.hikari.HikariTransactor
-import doobie.util.transactor.Transactor
 import doobie.implicits.*
 import doobie.util.ExecutionContexts
+import doobie.util.transactor.Transactor
 
 object Doobie extends IOApp.Simple {
 
