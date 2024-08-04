@@ -5,7 +5,7 @@ import cats.effect.{IO, IOApp}
 import cats.implicits.*
 import com.kuzhagulov.jobsboard.config.EmberConfig
 import com.kuzhagulov.jobsboard.config.syntax.*
-import com.kuzhagulov.jobsboard.http.routes.HealthRoutes
+import com.kuzhagulov.jobsboard.http.HttpApi
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.http4s.HttpRoutes
@@ -26,7 +26,7 @@ object Application extends IOApp.Simple {
       .default[IO]
       .withHost(config.host)
       .withPort(config.port)
-      .withHttpApp(HealthRoutes[IO].routes.orNotFound)
+      .withHttpApp(HttpApi[IO].endpoints.orNotFound)
       .build
       .use(_ => IO.println("Server started...") *> IO.never)
   }
