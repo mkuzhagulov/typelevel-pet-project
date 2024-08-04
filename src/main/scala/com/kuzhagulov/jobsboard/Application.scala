@@ -4,6 +4,7 @@ import cats.*
 import cats.effect.{IO, IOApp}
 import cats.implicits.*
 import com.kuzhagulov.jobsboard.config.EmberConfig
+import com.kuzhagulov.jobsboard.config.syntax.*
 import com.kuzhagulov.jobsboard.http.routes.HealthRoutes
 import io.circe.generic.auto.*
 import io.circe.syntax.*
@@ -20,18 +21,13 @@ object Application extends IOApp.Simple {
 
   val configSource: Result[EmberConfig] = ConfigSource.default.load[EmberConfig]
 
-  override def run: IO[Unit] =
-    configSource match {
-      case Right(conf) =>
-        EmberServerBuilder
-          .default[IO]
-          .withHost(conf.host)
-          .withPort(conf.port)
-          .withHttpApp(HealthRoutes[IO].routes.orNotFound)
-          .build
-          .use(_ => IO.println("Server started...") *> IO.never)
-      case Left(ex) =>
-    }
-
-
+  override def run: IO[Unit] = ConfigSource.default.loadF[IO, EmberConfig].flatMap { config =>
+    EmberServerBuilder
+      .default[IO]
+      .withHost(config.host)
+      .withPort(config.port)
+      .withHttpApp(HealthRoutes[IO].routes.orNotFound)
+      .build
+      .use(_ => IO.println("Server started...") *> IO.never)
+  }
 }
