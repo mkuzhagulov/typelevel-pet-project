@@ -12,10 +12,10 @@ object Doobie extends IOApp.Simple {
   case class Student(id: Int, name: String)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
-    "org.postgresql.Driver",                  // JDBC Connector
-    "jdbc:postgresql://localhost:5432/demo",  // database URL
-    "docker",                                 // user
-    "docker"                                  // password
+    "org.postgresql.Driver", // JDBC Connector
+    "jdbc:postgresql://localhost:5432/demo", // database URL
+    "docker", // user
+    "docker" // password
   )
 
   def findAllStudents: IO[List[String]] = {
@@ -42,17 +42,21 @@ object Doobie extends IOApp.Simple {
 
   trait Students[F[_]] {
     def findById(id: Int): F[Option[Student]]
+
     def findAll: F[List[Student]]
+
     def create(name: String): F[Int]
   }
 
   object Students {
-    def make[F[_]: MonadCancelThrow](xa: Transactor[F]) = new Students[F] {
+    def make[F[_] : MonadCancelThrow](xa: Transactor[F]) = new Students[F] {
 
       override def findById(id: Int): F[Option[Student]] =
         sql"SELECT id, name FROM students WHERE id = $id".query[Student].option.transact(xa)
+
       override def findAll: F[List[Student]] =
         sql"SELECT id, name FROM students".query[Student].to[List].transact(xa)
+
       override def create(name: String): F[Int] =
         sql"INSERT INTO students(name) values ($name)".update.withUniqueGeneratedKeys[Int]("id").transact(xa)
     }

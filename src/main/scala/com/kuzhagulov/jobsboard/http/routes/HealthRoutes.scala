@@ -23,5 +23,5 @@ class HealthRoutes[F[_] : Monad] private extends Http4sDsl[F] {
 }
 
 object HealthRoutes {
-  def apply[F[_]: Monad] = new HealthRoutes[F]
+  def apply[F[_] : Monad] = new HealthRoutes[F]
 }

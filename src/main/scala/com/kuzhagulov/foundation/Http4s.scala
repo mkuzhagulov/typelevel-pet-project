@@ -16,7 +16,9 @@ import java.util.UUID
 
 object Http4s extends IOApp.Simple {
   type Student = String
+
   case class Instructor(firstName: String, lastName: String)
+
   case class Course(id: String, title: String, year: Int, students: List[Student], instructorName: String)
 
   object CourseRepository {
@@ -46,9 +48,10 @@ object Http4s extends IOApp.Simple {
   */
 
   object InstructorQueryParameterMatcher extends QueryParamDecoderMatcher[String]("instructor")
+
   object YearQueryParamMatcher extends OptionalValidatingQueryParamDecoderMatcher[Int]("year")
 
-  def courseRoutes[F[_]: Monad]: HttpRoutes[F] = {
+  def courseRoutes[F[_] : Monad]: HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl.*
 
@@ -72,7 +75,7 @@ object Http4s extends IOApp.Simple {
     }
   }
 
-  def healthEndpoint[F[_]: Monad]: HttpRoutes[F] = {
+  def healthEndpoint[F[_] : Monad]: HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl.*
 
@@ -81,7 +84,7 @@ object Http4s extends IOApp.Simple {
     }
   }
 
-  def allRoutes[F[_]: Monad]: HttpRoutes[F] = courseRoutes[F] <+> healthEndpoint[F]
+  def allRoutes[F[_] : Monad]: HttpRoutes[F] = courseRoutes[F] <+> healthEndpoint[F]
 
   def routerWithPathPrefixes = Router(
     "/api" -> courseRoutes[IO],
