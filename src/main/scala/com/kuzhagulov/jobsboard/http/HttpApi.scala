@@ -9,8 +9,9 @@ import org.http4s.dsl.*
 import org.http4s.dsl.impl.*
 import org.http4s.ember.server.*
 import org.http4s.server.Router
+import org.typelevel.log4cats.Logger
 
-class HttpApi[F[_] : Concurrent] private {
+class HttpApi[F[_] : Concurrent : Logger] private {
   private val healthRoutes = HealthRoutes[F].routes
   private val jobRoutes = JobRoutes[F].routes
 
@@ -20,5 +21,5 @@ class HttpApi[F[_] : Concurrent] private {
 }
 
 object HttpApi {
-  def apply[F[_] : Concurrent] = new HttpApi[F]
+  def apply[F[_] : Concurrent : Logger] = new HttpApi[F]
 }

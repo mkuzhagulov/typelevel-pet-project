@@ -42,9 +42,7 @@ object Doobie extends IOApp.Simple {
 
   trait Students[F[_]] {
     def findById(id: Int): F[Option[Student]]
-
     def findAll: F[List[Student]]
-
     def create(name: String): F[Int]
   }
 
