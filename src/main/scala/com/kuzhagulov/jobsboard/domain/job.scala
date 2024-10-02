@@ -18,6 +18,7 @@ object job {
     remote: Boolean,
     salaryLo: Option[Int],
     salaryHi: Option[Int],
+    currency: Option[String],
     location: String,
     country: Option[String],
     tags: Option[List[String]],
@@ -25,6 +26,14 @@ object job {
     other: Option[String])
   
   object JobInfo {
-    val empty = JobInfo("", "", "", "", false, None, None, "", None, None, None, None)
+    val empty = JobInfo("", "", "", "", false, None, None, None, "", None, None, None, None)
+
+    def minimal(company: String,
+                title: String,
+                description: String,
+                externalUrl: String,
+                remote: Boolean,
+                location: String): JobInfo =
+      JobInfo(company, title, description, externalUrl, remote, None, None, None, location, None, None, None, None)
   }
 }

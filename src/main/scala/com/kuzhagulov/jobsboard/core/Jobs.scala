@@ -13,7 +13,7 @@ import java.util.UUID
 trait Jobs[F[_]] {
   // algebra
   // CRUD
-  def create(ownerEmail: String, job: Job): F[UUID]
+  def create(ownerEmail: String, jobInfo: JobInfo): F[UUID]
   def all(): F[List[Job]]
   def find(id: UUID): F[Option[Job]]
   def update(id: UUID, jobInfo: JobInfo): F[Option[Job]]
@@ -21,10 +21,9 @@ trait Jobs[F[_]] {
 }
 
 class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F] {
-  override def create(ownerEmail: String, job: Job): F[UUID] =
+  override def create(ownerEmail: String, jobInfo: JobInfo): F[UUID] =
     sql"""
          INSERT INTO jobs(
-            id,
             date,
             ownerEmail,
             company,
@@ -34,6 +33,7 @@ class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F
             remote,
             salaryLo,
             salaryHi,
+            currency,
             location,
             country,
             tags,
@@ -43,18 +43,19 @@ class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F
          ) VALUES (
             ${System.currentTimeMillis()},
             $ownerEmail,
-            ${job.jobInfo.company},
-            ${job.jobInfo.title},
-            ${job.jobInfo.description},
-            ${job.jobInfo.externalUrl},
-            ${job.jobInfo.remote},
-            ${job.jobInfo.salaryLo},
-            ${job.jobInfo.salaryHi},
-            ${job.jobInfo.location},
-            ${job.jobInfo.country},
-            ${job.jobInfo.tags},
-            ${job.jobInfo.seniority},
-            ${job.jobInfo.other},
+            ${jobInfo.company},
+            ${jobInfo.title},
+            ${jobInfo.description},
+            ${jobInfo.externalUrl},
+            ${jobInfo.remote},
+            ${jobInfo.salaryLo},
+            ${jobInfo.salaryHi},
+            ${jobInfo.currency},
+            ${jobInfo.location},
+            ${jobInfo.country},
+            ${jobInfo.tags},
+            ${jobInfo.seniority},
+            ${jobInfo.other},
             false
          )"""
       .update
@@ -73,6 +74,7 @@ class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F
               remote,
               salaryLo,
               salaryHi,
+              currency,
               location,
               country,
               tags,
@@ -97,6 +99,7 @@ class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F
                 remote,
                 salaryLo,
                 salaryHi,
+                currency,
                 location,
                 country,
                 tags,
@@ -121,6 +124,7 @@ class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F
             remote = ${jobInfo.remote},
             salaryLo = ${jobInfo.salaryLo},
             salaryHi = ${jobInfo.salaryHi},
+            currency = ${jobInfo.currency},
             location = ${jobInfo.location},
             country = ${jobInfo.country},
             tags = ${jobInfo.tags},
@@ -154,6 +158,7 @@ object LiveJobs {
       Boolean,
       Option[Int],
       Option[Int],
+      Option[String],
       String,
       Option[String],
       Option[List[String]],
@@ -172,7 +177,8 @@ object LiveJobs {
       remote: Boolean,
       salaryLo: Option[Int] @unchecked,
       salaryHi: Option[Int] @unchecked,
-      location: String @unchecked,
+      currency: Option[String] @unchecked,
+      location: String,
       country: Option[String] @unchecked,
       tags: Option[List[String]] @unchecked,
       seniority: Option[String] @unchecked,
@@ -191,6 +197,7 @@ object LiveJobs {
           remote = remote,
           salaryLo = salaryLo,
           salaryHi = salaryHi,
+          currency = currency,
           location = location,
           country = country,
           tags = tags,
