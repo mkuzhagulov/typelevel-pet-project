@@ -21,42 +21,6 @@ trait Jobs[F[_]] {
 }
 
 class LiveJobs[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F] {
-
-  /*
-    id: UUID,
-    date: Long,
-    ownerEmail: String,
-    company: String,
-    title: String,
-    description: String,
-    externalUrl: String,
-    remote: Boolean,
-    salaryLo: Option[Int],
-    salaryHi: Option[Int],
-    location: String,
-    country: Option[String],
-    tags: Option[List[String]],
-    seniority: Option[String],
-    other: Option[String],
-    active: Boolean
-
-    id
-    date
-    ownerEmail
-    company
-    title
-    description
-    externalUrl
-    remote
-    salaryLo
-    salaryHi
-    location
-    country
-    tags
-    seniority
-    other
-    active
-   */
   override def create(ownerEmail: String, job: Job): F[UUID] =
     sql"""
          INSERT INTO jobs(
